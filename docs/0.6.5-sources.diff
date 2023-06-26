@@ -1,0 +1,62 @@
+--- typespeed-0.6.5/src/file.c~	2008-08-13 16:36:52.000000000 +0200
++++ typespeed-0.6.5/src/file.c	2008-08-13 17:11:11.168969600 +0200
+@@ -1222,6 +1222,33 @@
+ 	}
+ }
+ 
++char *
++strsep(char **str, char *delim)
++{
++	char *p, *ret;
++
++	if ((ret = *str) == NULL)
++		return NULL;
++
++	for (p = *str; *p != '\0'; p++)
++		if (strchr(delim, *p) != NULL)
++			break;
++	if (*p == '\0') {
++		*str = NULL;
++		return ret;
++	}
++
++	for (*p++ = '\0'; *p != '\0' && strchr(delim, *p) != NULL; p++)
++		;
++	if (*p == '\0') {
++		*str = NULL;
++		return ret;
++	}
++
++	*str = p;
++	return ret;
++}
++
+ /*
+  * setoptions sets actually configuration and rule sets. If a
+  * configuration or rule set has been opened decides "op":
+--- typespeed-0.6.5/src/misc.c~	2008-08-13 16:36:52.000000000 +0200
++++ typespeed-0.6.5/src/misc.c	2008-08-13 17:12:05.386931200 +0200
+@@ -291,10 +291,8 @@
+ void
+ xcolor_set(short color_pair_number)
+ {
+-#ifdef color_set
+ 	if (opt.usecolors == 1)
+ 		color_set(color_pair_number, NULL);
+-#endif /* color_set */
+ }
+ #endif /* COLORTEST */
+ 
+--- typespeed-0.6.5/src/typespeed.c~	2008-08-13 16:36:52.000000000 +0200
++++ typespeed-0.6.5/src/typespeed.c	2008-08-13 17:12:44.743523200 +0200
+@@ -390,6 +390,10 @@
+ 	if (strcmp(rules.fname, "default"))
+ 		setruleset(rules.fname);
+ 
++	printf("This binary is linked with components of following projects:\n");
++	printf("libiconv 1.11 Copyright (C) 2000-2006 Free Software Foundation, Inc.\n");
++	printf("gettext 0.16.1 Copyright (C) 1995-1999, 2000-2003 Free Software Foundation, Inc.\n\n");
++
+ 	printf(_(
+ "Typespeed %s, Copyright (C) Jani Ollikainen & Jaakko Manelius\n\
+                   Copyright (C) Tobias Stoeckmann\n\
